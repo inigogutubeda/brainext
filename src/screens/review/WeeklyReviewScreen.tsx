@@ -68,8 +68,9 @@ export function WeeklyReviewScreen({ navigation }: Props) {
   };
 
   const handleFinish = () => {
-    Alert.alert("Revisión completada", "Que tengas una semana alineada.");
-    navigation.goBack();
+    Alert.alert("Revisión completada", "Que tengas una semana alineada.", [
+      { text: "OK", onPress: () => navigation.goBack() },
+    ]);
   };
 
   return (

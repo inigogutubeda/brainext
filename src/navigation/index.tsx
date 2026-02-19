@@ -45,7 +45,7 @@ function HomeNavigator() {
 function MainTabs() {
   return (
     <Tab.Navigator
-      screenOptions={({ navigation: tabNav }) => ({
+      screenOptions={() => ({
         headerShown: true,
         tabBarActiveTintColor: "#4f46e5",
         headerRight: () => (
