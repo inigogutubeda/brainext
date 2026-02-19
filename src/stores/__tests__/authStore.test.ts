@@ -1,4 +1,4 @@
-import { renderHook, act } from "@testing-library/react-native";
+import { renderHook } from "@testing-library/react-native";
 import { useAuthStore } from "../authStore";
 
 // Mock supabase
@@ -8,7 +8,6 @@ jest.mock("../../lib/supabase", () => ({
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),
       signOut: jest.fn(),
-      getSession: jest.fn().mockResolvedValue({ data: { session: null } }),
       onAuthStateChange: jest.fn().mockReturnValue({
         data: { subscription: { unsubscribe: jest.fn() } },
       }),
