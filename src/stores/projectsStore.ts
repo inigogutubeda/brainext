@@ -25,13 +25,16 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
 
   fetchProjects: async (userId) => {
     set({ loading: true });
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-    if (!error && data) set({ projects: data });
-    set({ loading: false });
+    try {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+      if (!error && data) set({ projects: data });
+    } finally {
+      set({ loading: false });
+    }
   },
 
   createProject: async (userId, input) => {

@@ -4,6 +4,7 @@ import { useProjectsStore } from "../../stores/projectsStore";
 import { useGoalsStore } from "../../stores/goalsStore";
 import { useAuthStore } from "../../stores/authStore";
 import type { Project } from "../../types";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 function ProjectCard({ project, goalTitle }: { project: Project; goalTitle: string }) {
   const incomeLabel = project.income_type === "income" ? "💰 Ingresos" : "🧠 Sin ingresos";
@@ -16,7 +17,7 @@ function ProjectCard({ project, goalTitle }: { project: Project; goalTitle: stri
   );
 }
 
-type Props = { navigation: any };
+type Props = { navigation: NativeStackNavigationProp<any> };
 
 export function ProjectListScreen({ navigation }: Props) {
   const { projects, fetchProjects } = useProjectsStore();
