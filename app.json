@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "brainext-temp",
-    "slug": "brainext-temp",
+    "name": "brainext",
+    "slug": "brainext",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
