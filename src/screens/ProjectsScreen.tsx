@@ -1,10 +1,15 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { ProjectListScreen } from "./projects/ProjectListScreen";
+import { ProjectFormScreen } from "./projects/ProjectFormScreen";
+
+const Stack = createNativeStackNavigator();
 
 export function ProjectsScreen() {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-gray-800">Proyectos</Text>
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen name="ProjectList" component={ProjectListScreen} options={{ title: "Proyectos" }} />
+      <Stack.Screen name="ProjectForm" component={ProjectFormScreen} options={{ title: "Nuevo Proyecto" }} />
+    </Stack.Navigator>
   );
 }
