@@ -28,7 +28,8 @@ function GoalCard({ goal }: { goal: Goal }) {
   );
 }
 
-type Props = { navigation: any };
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+type Props = { navigation: NativeStackNavigationProp<any> };
 
 export function GoalListScreen({ navigation }: Props) {
   const { goals, fetchGoals, loading } = useGoalsStore();

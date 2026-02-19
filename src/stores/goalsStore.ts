@@ -25,13 +25,16 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
 
   fetchGoals: async (userId) => {
     set({ loading: true });
-    const { data, error } = await supabase
-      .from("goals")
-      .select("*")
-      .eq("user_id", userId)
-      .order("priority", { ascending: true });
-    if (!error && data) set({ goals: data });
-    set({ loading: false });
+    try {
+      const { data, error } = await supabase
+        .from("goals")
+        .select("*")
+        .eq("user_id", userId)
+        .order("priority", { ascending: true });
+      if (!error && data) set({ goals: data });
+    } finally {
+      set({ loading: false });
+    }
   },
 
   createGoal: async (userId, input) => {

@@ -4,7 +4,8 @@ import { useGoalsStore } from "../../stores/goalsStore";
 import { useAuthStore } from "../../stores/authStore";
 import type { Goal } from "../../types";
 
-type Props = { navigation: any };
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+type Props = { navigation: NativeStackNavigationProp<any> };
 
 const horizonOptions: Goal["horizon"][] = ["short", "mid", "long"];
 const dimensionOptions: Goal["dimension"][] = ["personal", "professional", "financial"];
