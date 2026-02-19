@@ -9,7 +9,12 @@ import { HomeScreen } from "../screens/HomeScreen";
 import { GoalsScreen } from "../screens/GoalsScreen";
 import { ProjectsScreen } from "../screens/ProjectsScreen";
 
-const AuthStack = createNativeStackNavigator();
+export type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+};
+
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator();
 
 function AuthNavigator() {
@@ -37,12 +42,13 @@ function MainTabs() {
 }
 
 export function AppNavigator() {
-  const { user, initialize } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
+  const initialize = useAuthStore((s) => s.initialize);
 
   useEffect(() => {
     const unsubscribe = initialize();
     return unsubscribe;
-  }, []);
+  }, [initialize]);
 
   return (
     <NavigationContainer>

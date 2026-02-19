@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useAuthStore } from "../../stores/authStore";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { AuthStackParamList } from "../../navigation";
 
 type Props = {
-  navigation: NativeStackNavigationProp<any>;
+  navigation: NativeStackNavigationProp<AuthStackParamList>;
 };
 
 export function LoginScreen({ navigation }: Props) {
