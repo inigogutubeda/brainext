@@ -1,3 +1,5 @@
+// jest.mock is hoisted by babel-jest to before the imports — this is intentional.
+// AsyncStorage requires a native module not available in Jest/Node.
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock")
 );
