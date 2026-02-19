@@ -6,7 +6,7 @@
 
 **Architecture:** Expo (React Native) app with Supabase as the backend (PostgreSQL + auth). Navigation is tab-based (Home, Goals, Projects) with stack navigators per tab. State is local-first using Zustand stores that sync with Supabase.
 
-**Tech Stack:** Expo SDK 52, React Native, TypeScript, Supabase (PostgreSQL + GoTrue auth), React Navigation v6, Zustand, NativeWind v4, Jest, @testing-library/react-native
+**Tech Stack:** Expo SDK 54, React Native, TypeScript, Supabase (PostgreSQL + GoTrue auth), React Navigation v6, Zustand, NativeWind v4, Jest, @testing-library/react-native
 
 ---
 
