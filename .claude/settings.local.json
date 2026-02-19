@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-expo-app@latest . --template blank-typescript)",
+      "Bash(git config:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext log --oneline -10)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext show 2c9ce82 --stat)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext show f8ba3e7 --stat)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext diff f8ba3e7..1fdaf73)",
+      "Bash(ls:*)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext status)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext log --oneline f8ba3e7..1fdaf73)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext show 1fdaf73 --stat)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext ls-files:*)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext show f8ba3e7:package.json)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext show f8ba3e7:app.json)",
+      "Bash(git -C /c/Users/inigo/Desktop/brainext show f8ba3e7:.gitignore)",
+      "Bash(node -e:*)",
+      "Bash(npm install:*)",
+      "Bash(npx jest --passWithNoTests)",
+      "Bash(echo:*)",
+      "Bash(npx jest:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}
