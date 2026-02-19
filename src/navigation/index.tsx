@@ -43,6 +43,7 @@ function HomeNavigator() {
 }
 
 function MainTabs() {
+  const signOut = useAuthStore((s) => s.signOut);
   return (
     <Tab.Navigator
       screenOptions={() => ({
@@ -51,7 +52,7 @@ function MainTabs() {
         headerRight: () => (
           <TouchableOpacity
             style={{ marginRight: 16 }}
-            onPress={() => useAuthStore.getState().signOut()}
+            onPress={signOut}
           >
             <Text style={{ color: "#4f46e5" }}>Salir</Text>
           </TouchableOpacity>
