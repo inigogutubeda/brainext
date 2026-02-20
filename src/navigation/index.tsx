@@ -1,24 +1,25 @@
 import React, { useEffect } from "react";
-import { TouchableOpacity, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuthStore } from "../stores/authStore";
 import { LoginScreen } from "../screens/auth/LoginScreen";
 import { RegisterScreen } from "../screens/auth/RegisterScreen";
+import { ProfileSelectionScreen } from "../screens/onboarding/ProfileSelectionScreen";
+import { GoalSetupScreen } from "../screens/onboarding/GoalSetupScreen";
+import { AppIntroScreen } from "../screens/onboarding/AppIntroScreen";
 import { HomeScreen } from "../screens/HomeScreen";
 import { GoalsScreen } from "../screens/GoalsScreen";
 import { ProjectsScreen } from "../screens/ProjectsScreen";
 import { MorningFocusScreen } from "../screens/focus/MorningFocusScreen";
 import { EveningJournalScreen } from "../screens/journal/EveningJournalScreen";
 import { WeeklyReviewScreen } from "../screens/review/WeeklyReviewScreen";
+import { FocusTimerScreen } from "../screens/focus/FocusTimerScreen";
 
-export type AuthStackParamList = {
-  Login: undefined;
-  Register: undefined;
-};
+export type AuthStackParamList = { Login: undefined; Register: undefined };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const OnboardingStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
 
@@ -31,32 +32,41 @@ function AuthNavigator() {
   );
 }
 
+function OnboardingNavigator() {
+  return (
+    <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
+      <OnboardingStack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
+      <OnboardingStack.Screen name="GoalSetup" component={GoalSetupScreen} />
+      <OnboardingStack.Screen name="AppIntro" component={AppIntroScreen} />
+      <OnboardingStack.Screen name="MorningFocus" component={MorningFocusScreen} />
+    </OnboardingStack.Navigator>
+  );
+}
+
 function HomeNavigator() {
   return (
-    <HomeStack.Navigator>
-      <HomeStack.Screen name="Home" component={HomeScreen} options={{ title: "Hoy" }} />
-      <HomeStack.Screen name="MorningFocus" component={MorningFocusScreen} options={{ title: "Decide tu día" }} />
-      <HomeStack.Screen name="EveningJournal" component={EveningJournalScreen} options={{ title: "Cierre del día" }} />
-      <HomeStack.Screen name="WeeklyReview" component={WeeklyReviewScreen} options={{ title: "Revisión Semanal" }} />
+    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+      <HomeStack.Screen name="Home" component={HomeScreen} />
+      <HomeStack.Screen name="MorningFocus" component={MorningFocusScreen} />
+      <HomeStack.Screen name="EveningJournal" component={EveningJournalScreen} />
+      <HomeStack.Screen name="WeeklyReview" component={WeeklyReviewScreen} />
+      <HomeStack.Screen name="FocusTimer" component={FocusTimerScreen} />
     </HomeStack.Navigator>
   );
 }
 
 function MainTabs() {
-  const signOut = useAuthStore((s) => s.signOut);
   return (
     <Tab.Navigator
       screenOptions={() => ({
-        headerShown: true,
-        tabBarActiveTintColor: "#4f46e5",
-        headerRight: () => (
-          <TouchableOpacity
-            style={{ marginRight: 16 }}
-            onPress={signOut}
-          >
-            <Text style={{ color: "#4f46e5" }}>Salir</Text>
-          </TouchableOpacity>
-        ),
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: "#FAF7F2",
+          borderTopColor: "#E7E5E0",
+        },
+        tabBarActiveTintColor: "#D97706",
+        tabBarInactiveTintColor: "#A8A29E",
+        tabBarLabelStyle: { fontSize: 12, fontWeight: "600" },
       })}
     >
       <Tab.Screen name="Hoy" component={HomeNavigator} />
@@ -68,16 +78,24 @@ function MainTabs() {
 
 export function AppNavigator() {
   const user = useAuthStore((s) => s.user);
+  const profile = useAuthStore((s) => s.profile);
+  const profileLoading = useAuthStore((s) => s.profileLoading);
   const initialize = useAuthStore((s) => s.initialize);
+  const fetchProfile = useAuthStore((s) => s.fetchProfile);
 
   useEffect(() => {
     const unsubscribe = initialize();
     return unsubscribe;
   }, [initialize]);
 
-  return (
-    <NavigationContainer>
-      {user ? <MainTabs /> : <AuthNavigator />}
-    </NavigationContainer>
-  );
+  useEffect(() => {
+    if (user) {
+      fetchProfile(user.id);
+    }
+  }, [user]);
+
+  if (!user) return <NavigationContainer><AuthNavigator /></NavigationContainer>;
+  if (profileLoading) return null;
+  if (!profile || !profile.profile_type) return <NavigationContainer><OnboardingNavigator /></NavigationContainer>;
+  return <NavigationContainer><MainTabs /></NavigationContainer>;
 }
