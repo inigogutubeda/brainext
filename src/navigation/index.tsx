@@ -36,7 +36,7 @@ function OnboardingNavigator() {
   return (
     <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
       <OnboardingStack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
-      <OnboardingStack.Screen name="GoalSetup" component={GoalSetupScreen} />
+      <OnboardingStack.Screen name="GoalSetup" component={GoalSetupScreen as React.ComponentType<any>} />
       <OnboardingStack.Screen name="AppIntro" component={AppIntroScreen} />
     </OnboardingStack.Navigator>
   );
