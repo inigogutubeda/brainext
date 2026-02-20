@@ -1,5 +1,15 @@
-export type ProfileType = "freelancer" | "entrepreneur" | "creative";
+export type ProfileType = "freelancer" | "entrepreneur" | "creative" | "business_owner";
 
+// Profile matches the public.profiles table (NOT the Supabase auth User)
+export interface Profile {
+  id: string;
+  email: string;
+  name: string;
+  profile_type: ProfileType | null; // null = user hasn't completed onboarding yet
+  created_at: string;
+}
+
+// Kept for backward compat — use Profile instead of User going forward
 export interface User {
   id: string;
   email: string;
@@ -50,31 +60,32 @@ export interface Action {
   effort_level: EffortLevel;
   perceived_impact: ImpactLevel;
   status: ActionStatus;
-  scheduled_for: string; // ISO date string YYYY-MM-DD
+  scheduled_for: string;
   created_at: string;
 }
 
 export interface DailyFocus {
   id: string;
   user_id: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   main_focus: string;
   secondary_focus: string;
   intention_notes: string;
   created_at: string;
 }
 
+// Generalized: q1/q2/q3 mapped from profile-specific questions in PROFILE_CONFIG
 export interface GuidedAnswers {
-  what_happened: string;
-  what_i_avoided: string;
-  why: string;
+  q1: string;
+  q2: string;
+  q3: string;
   alignment_score: 1 | 2 | 3 | 4 | 5;
 }
 
 export interface JournalEntry {
   id: string;
   user_id: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   free_text: string;
   guided_answers: GuidedAnswers;
   related_project_ids: string[];

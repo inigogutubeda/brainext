@@ -13,7 +13,7 @@ jest.mock("../../lib/supabase", () => ({
         user_id: "u1",
         date: "2026-02-19",
         free_text: "Hoy fue un buen día",
-        guided_answers: { what_happened: "", what_i_avoided: "", why: "", alignment_score: 4 },
+        guided_answers: { q1: "", q2: "", q3: "", alignment_score: 4 },
         related_project_ids: [],
         created_at: new Date().toISOString(),
       },
