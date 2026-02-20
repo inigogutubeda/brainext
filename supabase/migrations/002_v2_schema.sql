@@ -18,6 +18,10 @@ alter table public.profiles
 
 -- profiles
 drop policy if exists "Users can manage own profile" on public.profiles;
+drop policy if exists "profiles_select" on public.profiles;
+drop policy if exists "profiles_insert" on public.profiles;
+drop policy if exists "profiles_update" on public.profiles;
+drop policy if exists "profiles_delete" on public.profiles;
 create policy "profiles_select" on public.profiles
   for select using (auth.uid() = id);
 create policy "profiles_insert" on public.profiles
@@ -29,6 +33,10 @@ create policy "profiles_delete" on public.profiles
 
 -- goals
 drop policy if exists "Users can manage own goals" on public.goals;
+drop policy if exists "goals_select" on public.goals;
+drop policy if exists "goals_insert" on public.goals;
+drop policy if exists "goals_update" on public.goals;
+drop policy if exists "goals_delete" on public.goals;
 create policy "goals_select" on public.goals
   for select using (auth.uid() = user_id);
 create policy "goals_insert" on public.goals
@@ -40,6 +48,10 @@ create policy "goals_delete" on public.goals
 
 -- projects
 drop policy if exists "Users can manage own projects" on public.projects;
+drop policy if exists "projects_select" on public.projects;
+drop policy if exists "projects_insert" on public.projects;
+drop policy if exists "projects_update" on public.projects;
+drop policy if exists "projects_delete" on public.projects;
 create policy "projects_select" on public.projects
   for select using (auth.uid() = user_id);
 create policy "projects_insert" on public.projects
@@ -51,6 +63,10 @@ create policy "projects_delete" on public.projects
 
 -- actions
 drop policy if exists "Users can manage own actions" on public.actions;
+drop policy if exists "actions_select" on public.actions;
+drop policy if exists "actions_insert" on public.actions;
+drop policy if exists "actions_update" on public.actions;
+drop policy if exists "actions_delete" on public.actions;
 create policy "actions_select" on public.actions
   for select using (auth.uid() = user_id);
 create policy "actions_insert" on public.actions
@@ -62,6 +78,10 @@ create policy "actions_delete" on public.actions
 
 -- daily_focus
 drop policy if exists "Users can manage own focus" on public.daily_focus;
+drop policy if exists "daily_focus_select" on public.daily_focus;
+drop policy if exists "daily_focus_insert" on public.daily_focus;
+drop policy if exists "daily_focus_update" on public.daily_focus;
+drop policy if exists "daily_focus_delete" on public.daily_focus;
 create policy "daily_focus_select" on public.daily_focus
   for select using (auth.uid() = user_id);
 create policy "daily_focus_insert" on public.daily_focus
@@ -73,6 +93,10 @@ create policy "daily_focus_delete" on public.daily_focus
 
 -- journal_entries
 drop policy if exists "Users can manage own journal" on public.journal_entries;
+drop policy if exists "journal_select" on public.journal_entries;
+drop policy if exists "journal_insert" on public.journal_entries;
+drop policy if exists "journal_update" on public.journal_entries;
+drop policy if exists "journal_delete" on public.journal_entries;
 create policy "journal_select" on public.journal_entries
   for select using (auth.uid() = user_id);
 create policy "journal_insert" on public.journal_entries
