@@ -1,29 +1,28 @@
-import { renderHook } from "@testing-library/react-native";
+import { renderHook, act } from "@testing-library/react-native";
 import { useAuthStore } from "../authStore";
 
-// Mock supabase
 jest.mock("../../lib/supabase", () => ({
   supabase: {
     auth: {
-      signInWithPassword: jest.fn(),
-      signUp: jest.fn(),
-      signOut: jest.fn(),
-      onAuthStateChange: jest.fn().mockReturnValue({
-        data: { subscription: { unsubscribe: jest.fn() } },
-      }),
+      signInWithPassword: jest.fn().mockResolvedValue({ data: { user: { id: "u1" }, session: {} }, error: null }),
+      signUp: jest.fn().mockResolvedValue({ data: { user: { id: "u1" }, session: {} }, error: null }),
+      signOut: jest.fn().mockResolvedValue({}),
+      onAuthStateChange: jest.fn().mockReturnValue({ data: { subscription: { unsubscribe: jest.fn() } } }),
     },
+    from: jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      single: jest.fn().mockResolvedValue({ data: { id: "u1", email: "a@b.com", name: "Test", profile_type: "freelancer", created_at: "" }, error: null }),
+      update: jest.fn().mockReturnThis(),
+    }),
   },
 }));
 
 describe("useAuthStore", () => {
-  it("starts with no user", () => {
+  it("starts unauthenticated with no profile", () => {
     const { result } = renderHook(() => useAuthStore());
     expect(result.current.user).toBeNull();
-  });
-
-  it("starts not loading", () => {
-    const { result } = renderHook(() => useAuthStore());
-    expect(result.current.loading).toBe(false);
+    expect(result.current.profile).toBeNull();
   });
 
   it("has signIn function", () => {
@@ -31,13 +30,13 @@ describe("useAuthStore", () => {
     expect(typeof result.current.signIn).toBe("function");
   });
 
-  it("has signUp function", () => {
+  it("has fetchProfile function", () => {
     const { result } = renderHook(() => useAuthStore());
-    expect(typeof result.current.signUp).toBe("function");
+    expect(typeof result.current.fetchProfile).toBe("function");
   });
 
-  it("has signOut function", () => {
+  it("has updateProfile function", () => {
     const { result } = renderHook(() => useAuthStore());
-    expect(typeof result.current.signOut).toBe("function");
+    expect(typeof result.current.updateProfile).toBe("function");
   });
 });
