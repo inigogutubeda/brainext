@@ -1,35 +1,32 @@
 import React, { useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, SafeAreaView } from "react-native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useGoalsStore } from "../../stores/goalsStore";
 import { useAuthStore } from "../../stores/authStore";
 import type { Goal } from "../../types";
 
-const statusBadge: Record<Goal["status"], { label: string; bg: string; text: string }> = {
-  active:    { label: "Activo",      bg: "bg-green-100",  text: "text-green-700"  },
-  paused:    { label: "Pausado",     bg: "bg-yellow-100", text: "text-yellow-700" },
-  completed: { label: "Completado",  bg: "bg-gray-100",   text: "text-gray-600"   },
-};
-const dimensionLabel: Record<Goal["dimension"], string> = {
-  personal: "Personal", professional: "Profesional", financial: "Financiero",
-};
+type Props = { navigation: NativeStackNavigationProp<any> };
+
+const HORIZON_LABEL = { short: "3–6 meses", mid: "1–2 años", long: "3+ años" };
+const STATUS_COLOR = { active: "bg-amber-100 text-amber-700", paused: "bg-stone-100 text-stone-500", completed: "bg-green-100 text-green-700" };
 
 function GoalCard({ goal }: { goal: Goal }) {
-  const badge = statusBadge[goal.status];
   return (
-    <View className="bg-white rounded-2xl p-4 mb-3 border border-gray-100">
-      <View className="flex-row justify-between items-start mb-1">
-        <Text className="text-base font-semibold text-gray-900 flex-1">{goal.title}</Text>
-        <View className={`px-2 py-1 rounded-full ml-2 ${badge.bg}`}>
-          <Text className={`text-xs font-medium ${badge.text}`}>{badge.label}</Text>
+    <View className="bg-white rounded-2xl p-4 mb-3 border border-stone-100">
+      <View className="flex-row items-start justify-between mb-2">
+        <Text className="text-base font-semibold text-stone-900 flex-1 mr-2">{goal.title}</Text>
+        <View className={`px-2 py-1 rounded-full ${STATUS_COLOR[goal.status].split(" ")[0]}`}>
+          <Text className={`text-xs font-semibold ${STATUS_COLOR[goal.status].split(" ")[1]}`}>
+            {goal.status === "active" ? "Activo" : goal.status === "paused" ? "Pausado" : "Completado"}
+          </Text>
         </View>
       </View>
-      <Text className="text-sm text-gray-500">{dimensionLabel[goal.dimension]} · P{goal.priority}</Text>
+      <Text className="text-xs text-stone-400">
+        {HORIZON_LABEL[goal.horizon]} · {goal.dimension} · P{goal.priority}
+      </Text>
     </View>
   );
 }
-
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-type Props = { navigation: NativeStackNavigationProp<any> };
 
 export function GoalListScreen({ navigation }: Props) {
   const { goals, fetchGoals, loading } = useGoalsStore();
@@ -40,26 +37,34 @@ export function GoalListScreen({ navigation }: Props) {
   }, [user]);
 
   return (
-    <View className="flex-1 bg-gray-50 px-4 pt-6">
-      <View className="flex-row justify-between items-center mb-6">
-        <Text className="text-2xl font-bold text-gray-900">Objetivos</Text>
-        <TouchableOpacity
-          className="bg-indigo-600 rounded-full px-4 py-2"
-          onPress={() => navigation.navigate("GoalForm")}
-        >
-          <Text className="text-white font-semibold">+ Nuevo</Text>
-        </TouchableOpacity>
+    <SafeAreaView className="flex-1 bg-cream">
+      <View className="flex-1 px-5">
+        <View className="flex-row items-center justify-between py-5">
+          <Text className="text-xl font-bold text-stone-900">Objetivos</Text>
+          <TouchableOpacity
+            className="bg-amber-600 rounded-xl px-4 py-2"
+            onPress={() => navigation.navigate("GoalForm")}
+          >
+            <Text className="text-white font-semibold text-sm">+ Nuevo</Text>
+          </TouchableOpacity>
+        </View>
+
+        {loading && <Text className="text-stone-400 text-center py-8">Cargando...</Text>}
+
+        {!loading && goals.length === 0 && (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-stone-400 text-center mb-2">Sin objetivos todavía.</Text>
+            <Text className="text-stone-400 text-center text-sm">Crea tu primer objetivo para empezar.</Text>
+          </View>
+        )}
+
+        <FlatList
+          data={goals}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <GoalCard goal={item} />}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
-      {goals.length === 0 && !loading && (
-        <Text className="text-gray-400 text-center mt-16">
-          Sin objetivos todavía.{"\n"}Añade tu primer objetivo.
-        </Text>
-      )}
-      <FlatList
-        data={goals}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <GoalCard goal={item} />}
-      />
-    </View>
+    </SafeAreaView>
   );
 }

@@ -1,99 +1,98 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useGoalsStore } from "../../stores/goalsStore";
 import { useAuthStore } from "../../stores/authStore";
-import type { Goal } from "../../types";
+import type { GoalHorizon, GoalDimension } from "../../types";
 
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 type Props = { navigation: NativeStackNavigationProp<any> };
 
-const horizonOptions: Goal["horizon"][] = ["short", "mid", "long"];
-const dimensionOptions: Goal["dimension"][] = ["personal", "professional", "financial"];
-const horizonLabel: Record<Goal["horizon"], string> = { short: "Corto plazo", mid: "Medio plazo", long: "Largo plazo" };
-const dimensionLabel: Record<Goal["dimension"], string> = { personal: "Personal", professional: "Profesional", financial: "Financiero" };
+const HORIZONS: { value: GoalHorizon; label: string }[] = [
+  { value: "short", label: "3–6 meses" },
+  { value: "mid", label: "1–2 años" },
+  { value: "long", label: "3+ años" },
+];
+
+const DIMENSIONS: { value: GoalDimension; label: string }[] = [
+  { value: "professional", label: "Profesional" },
+  { value: "financial", label: "Financiero" },
+  { value: "personal", label: "Personal" },
+];
 
 export function GoalFormScreen({ navigation }: Props) {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState<1 | 2 | 3>(2);
-  const [horizon, setHorizon] = useState<Goal["horizon"]>("short");
-  const [dimension, setDimension] = useState<Goal["dimension"]>("professional");
-  const { createGoal } = useGoalsStore();
-  const { user } = useAuthStore();
+  const [horizon, setHorizon] = useState<GoalHorizon>("mid");
+  const [dimension, setDimension] = useState<GoalDimension>("professional");
+  const [saving, setSaving] = useState(false);
+
+  const createGoal = useGoalsStore((s) => s.createGoal);
+  const user = useAuthStore((s) => s.user);
 
   const handleSave = async () => {
-    if (!title.trim()) return Alert.alert("Error", "El título es obligatorio.");
-    if (!user) return;
-    const error = await createGoal(user.id, { title, description, priority, horizon, dimension });
-    if (error) Alert.alert("Error", error);
-    else navigation.goBack();
+    if (!title.trim() || !user) return;
+    setSaving(true);
+    try {
+      await createGoal(user.id, { title: title.trim(), description: "", priority: 2, horizon, dimension });
+      navigation.goBack();
+    } finally {
+      setSaving(false);
+    }
   };
 
+  const SegmentedPicker = <T extends string>({ options, value, onChange }: {
+    options: { value: T; label: string }[];
+    value: T;
+    onChange: (v: T) => void;
+  }) => (
+    <View className="flex-row gap-2 mb-5">
+      {options.map((opt) => (
+        <TouchableOpacity
+          key={opt.value}
+          onPress={() => onChange(opt.value)}
+          className={`flex-1 py-3 rounded-xl items-center border-2 ${value === opt.value ? "bg-amber-50 border-amber-500" : "bg-white border-stone-200"}`}
+        >
+          <Text className={`text-xs font-semibold ${value === opt.value ? "text-amber-700" : "text-stone-600"}`}>
+            {opt.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
   return (
-    <ScrollView className="flex-1 bg-white px-6 pt-6">
-      <Text className="text-lg font-semibold text-gray-700 mb-1">Título</Text>
-      <TextInput
-        className="border border-gray-300 rounded-lg px-4 py-3 mb-4 text-gray-900"
-        placeholder="¿Qué quieres conseguir?"
-        value={title}
-        onChangeText={setTitle}
-      />
-      <Text className="text-lg font-semibold text-gray-700 mb-1">Descripción</Text>
-      <TextInput
-        className="border border-gray-300 rounded-lg px-4 py-3 mb-4 text-gray-900 h-24"
-        placeholder="¿Por qué importa esto?"
-        multiline
-        value={description}
-        onChangeText={setDescription}
-      />
-      <Text className="text-lg font-semibold text-gray-700 mb-2">Horizonte</Text>
-      <View className="flex-row mb-4 gap-2">
-        {horizonOptions.map((h) => (
-          <TouchableOpacity
-            key={h}
-            className={`flex-1 py-2 rounded-lg items-center border ${horizon === h ? "bg-indigo-600 border-indigo-600" : "border-gray-300"}`}
-            onPress={() => setHorizon(h)}
-          >
-            <Text className={horizon === h ? "text-white font-semibold" : "text-gray-700"}>
-              {horizonLabel[h]}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <Text className="text-lg font-semibold text-gray-700 mb-2">Dimensión</Text>
-      <View className="flex-row mb-4 gap-2">
-        {dimensionOptions.map((d) => (
-          <TouchableOpacity
-            key={d}
-            className={`flex-1 py-2 rounded-lg items-center border ${dimension === d ? "bg-indigo-600 border-indigo-600" : "border-gray-300"}`}
-            onPress={() => setDimension(d)}
-          >
-            <Text className={dimension === d ? "text-white font-semibold" : "text-gray-700"}>
-              {dimensionLabel[d]}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <Text className="text-lg font-semibold text-gray-700 mb-2">Prioridad</Text>
-      <View className="flex-row mb-8 gap-2">
-        {([1, 2, 3] as const).map((p) => (
-          <TouchableOpacity
-            key={p}
-            className={`flex-1 py-2 rounded-lg items-center border ${priority === p ? "bg-indigo-600 border-indigo-600" : "border-gray-300"}`}
-            onPress={() => setPriority(p)}
-          >
-            <Text className={priority === p ? "text-white font-semibold" : "text-gray-700"}>
-              {p === 1 ? "Alta" : p === 2 ? "Media" : "Baja"}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <TouchableOpacity
-        className="bg-indigo-600 rounded-lg py-4 items-center mb-8"
-        onPress={handleSave}
-      >
-        <Text className="text-white font-semibold text-base">Guardar objetivo</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    <SafeAreaView className="flex-1 bg-cream">
+      <ScrollView className="flex-1 px-5 pt-6">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="mb-6">
+          <Text className="text-stone-400 text-sm">← Volver</Text>
+        </TouchableOpacity>
+
+        <Text className="text-2xl font-bold text-stone-900 mb-6">Nuevo objetivo</Text>
+
+        <Text className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Título</Text>
+        <TextInput
+          className="bg-white rounded-xl px-4 py-4 text-stone-900 mb-5 border border-stone-200"
+          placeholder="¿Qué quieres construir o lograr?"
+          placeholderTextColor="#A8A29E"
+          value={title}
+          onChangeText={setTitle}
+        />
+
+        <Text className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Horizonte</Text>
+        <SegmentedPicker options={HORIZONS} value={horizon} onChange={setHorizon} />
+
+        <Text className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Dimensión</Text>
+        <SegmentedPicker options={DIMENSIONS} value={dimension} onChange={setDimension} />
+
+        <TouchableOpacity
+          className={`rounded-2xl py-4 items-center mb-10 ${title.trim() && !saving ? "bg-amber-600" : "bg-stone-200"}`}
+          disabled={!title.trim() || saving}
+          onPress={handleSave}
+        >
+          <Text className={`font-semibold text-base ${title.trim() && !saving ? "text-white" : "text-stone-400"}`}>
+            {saving ? "Guardando..." : "Crear objetivo"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
