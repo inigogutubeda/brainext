@@ -25,15 +25,19 @@ export function FocusTimerScreen({ navigation }: Props) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const appStateRef = useRef<AppStateStatus>("active");
   const backgroundTimeRef = useRef<Date | null>(null);
+  const isRunningRef = useRef(false);
 
-  // Detect app going background / returning
+  // Keep ref in sync with isRunning state
+  useEffect(() => { isRunningRef.current = isRunning; }, [isRunning]);
+
+  // Detect app going background / returning â€” registered once
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextState: AppStateStatus) => {
-      if (appStateRef.current === "active" && nextState === "background" && isRunning) {
+      if (appStateRef.current === "active" && nextState === "background" && isRunningRef.current) {
         backgroundTimeRef.current = new Date();
         setBreaks((prev) => [...prev, { leftAt: new Date() }]);
       }
-      if (appStateRef.current === "background" && nextState === "active" && isRunning) {
+      if (appStateRef.current === "background" && nextState === "active" && isRunningRef.current) {
         if (backgroundTimeRef.current) {
           const elapsed = Math.floor((Date.now() - backgroundTimeRef.current.getTime()) / 1000);
           backgroundTimeRef.current = null;
@@ -45,7 +49,7 @@ export function FocusTimerScreen({ navigation }: Props) {
       appStateRef.current = nextState;
     });
     return () => subscription.remove();
-  }, [isRunning]);
+  }, []);
 
   // Timer countdown
   useEffect(() => {
@@ -189,9 +193,9 @@ export function FocusTimerScreen({ navigation }: Props) {
             <Text className="text-xl font-bold text-stone-900 mb-2">Estuviste fuera del foco</Text>
             <Text className="text-stone-500 mb-6">Â¿QuÃ© pasÃ³?</Text>
             {[
-              { reason: "distracted" as BreakReason, label: "Me distraje", emoji: "í ½í¸…" },
+              { reason: "distracted" as BreakReason, label: "Me distraje", emoji: "ðŸ˜…" },
               { reason: "necessary" as BreakReason, label: "Era necesario", emoji: "âœ…" },
-              { reason: "lost" as BreakReason, label: "Me perdÃ­", emoji: "í ¼í¼€" },
+              { reason: "lost" as BreakReason, label: "Me perdÃ­", emoji: "ðŸŒ€" },
             ].map((opt) => (
               <TouchableOpacity
                 key={opt.reason}

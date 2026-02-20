@@ -66,14 +66,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   updateProfile: async (userId, updates) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .update(updates)
-      .eq("id", userId)
-      .select()
-      .single();
-    if (!error && data) set({ profile: data as Profile });
-    return error?.message ?? null;
+    set({ profileLoading: true });
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", userId)
+        .select()
+        .single();
+      if (!error && data) set({ profile: data as Profile });
+      return error?.message ?? null;
+    } finally {
+      set({ profileLoading: false });
+    }
   },
 
   initialize: () => {

@@ -1,8 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-type Props = { navigation: NativeStackNavigationProp<any> };
+import { View, Text, TouchableOpacity, SafeAreaView, ActivityIndicator } from "react-native";
 
 const STEPS = [
   { emoji: "☀️", title: "Mañana", subtitle: "Decides en qué inviertes tu energía" },
@@ -10,7 +7,7 @@ const STEPS = [
   { emoji: "📊", title: "Semana", subtitle: "Ajustas lo que vale la pena seguir" },
 ];
 
-export function AppIntroScreen({ navigation }: Props) {
+export function AppIntroScreen() {
   return (
     <SafeAreaView className="flex-1 bg-cream justify-between px-6 py-10">
       <View className="flex-1 justify-center">
@@ -32,14 +29,12 @@ export function AppIntroScreen({ navigation }: Props) {
             </View>
           ))}
         </View>
-      </View>
 
-      <TouchableOpacity
-        className="bg-amber-600 rounded-2xl py-4 items-center"
-        onPress={() => navigation.navigate("MorningFocus")}
-      >
-        <Text className="text-white font-semibold text-base">Empezar mi primer día →</Text>
-      </TouchableOpacity>
+        <View className="items-center mt-12">
+          <ActivityIndicator color="#D97706" />
+          <Text className="text-stone-400 text-sm mt-2">Preparando tu primer día...</Text>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }

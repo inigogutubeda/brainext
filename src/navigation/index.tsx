@@ -38,7 +38,6 @@ function OnboardingNavigator() {
       <OnboardingStack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
       <OnboardingStack.Screen name="GoalSetup" component={GoalSetupScreen} />
       <OnboardingStack.Screen name="AppIntro" component={AppIntroScreen} />
-      <OnboardingStack.Screen name="MorningFocus" component={MorningFocusScreen} />
     </OnboardingStack.Navigator>
   );
 }
@@ -76,12 +75,21 @@ function MainTabs() {
   );
 }
 
-export function AppNavigator() {
+function RootNavigator() {
   const user = useAuthStore((s) => s.user);
   const profile = useAuthStore((s) => s.profile);
   const profileLoading = useAuthStore((s) => s.profileLoading);
+
+  if (!user) return <AuthNavigator />;
+  if (profileLoading) return null;
+  if (!profile || !profile.profile_type) return <OnboardingNavigator />;
+  return <MainTabs />;
+}
+
+export function AppNavigator() {
   const initialize = useAuthStore((s) => s.initialize);
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
+  const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
     const unsubscribe = initialize();
@@ -92,10 +100,11 @@ export function AppNavigator() {
     if (user) {
       fetchProfile(user.id);
     }
-  }, [user]);
+  }, [user, fetchProfile]);
 
-  if (!user) return <NavigationContainer><AuthNavigator /></NavigationContainer>;
-  if (profileLoading) return null;
-  if (!profile || !profile.profile_type) return <NavigationContainer><OnboardingNavigator /></NavigationContainer>;
-  return <NavigationContainer><MainTabs /></NavigationContainer>;
+  return (
+    <NavigationContainer>
+      <RootNavigator />
+    </NavigationContainer>
+  );
 }
